@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+
+# Build
+dist/
+
+.vscode
+.env
+out/
