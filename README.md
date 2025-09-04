@@ -31,6 +31,11 @@ PAGE_LIMIT=50
 FETCH_INTERVAL_MINUTES=30
 OUTPUT_FILE=
 OUTPUT_DIR=
+
+WHATSAPP_TOKEN=yourtokenhere
+WHATSAPP_APP_ID=youridhere
+WHATSAPP_DESTINATION=yourphonenumberhere
+
 ```
 
 ## How to use
