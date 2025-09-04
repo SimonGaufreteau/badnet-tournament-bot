@@ -8,7 +8,7 @@ const mapToTournaments = (data: string): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
   return parsed.events.map((event: BadnetTournament) => ({
     id: event.id,
-    name: `${event.id}`,
+    name: event.name,
     openline: event.openline,
     truedeadline: event.truedeadline,
     ageCategories: event.catages.map((c) => c.name),

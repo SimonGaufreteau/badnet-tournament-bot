@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "lint": "biome check --write"
+    "lint": "biome check --write",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +19,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
+    "jest": "^30.1.3",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   }
 }
