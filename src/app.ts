@@ -1,53 +1,46 @@
 import fs from "node:fs"
 import type { AxiosError } from "axios"
-import dotenv from "dotenv"
+import { filterNewTournaments, loadCache } from "./cache"
 import { validateFilters } from "./check"
+import { FILTERS, INTERVALMINUTES, OUTPUTDIR } from "./env"
 import { fetchTournaments } from "./fetch"
 import { filterTournaments } from "./filters"
-import type { Filters } from "./types/filter-types"
-
-dotenv.config({ quiet: true })
-
-const intervalMinutes = parseInt(process.env.FETCH_INTERVAL_MINUTES || "30", 10)
-const outputFile = process.env.OUTPUT_FILE || "tournaments.json"
-const outputDir = process.env.OUTPUT_DIR || "out"
-
-const filters: Filters = {
-  search: process.env.SEARCH || "",
-  region: process.env.REGION || "",
-  ageCategories: (process.env.AGE_CATEGORIES || "").split(",").filter(Boolean),
-  hideOpenedTournaments: process.env.HIDE_OPENED_TOURNAMENTS === "true",
-  hideClosedTournaments: process.env.HIDE_CLOSED_TOURNAMENTS === "true",
-}
 
 async function run(): Promise<void> {
   console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
 
   try {
-    const tournaments = await fetchTournaments(filters)
-    const filtered = filterTournaments(tournaments, filters)
+    const tournaments = await fetchTournaments(FILTERS)
+    const filtered = filterTournaments(tournaments, FILTERS)
+    const newTournaments = filterNewTournaments(filtered)
 
-    fs.mkdirSync(outputDir, { recursive: true })
-    fs.writeFileSync(
-      `${outputDir}/${outputFile}`,
-      JSON.stringify(filtered, null, 2),
-    )
+    if (newTournaments.length > 0) {
+      fs.mkdirSync(OUTPUTDIR, { recursive: true })
+      const timestamp = new Date().toISOString()
+      const logEntry = { [timestamp]: newTournaments.map((t) => t.id) }
+      fs.appendFileSync(
+        `${OUTPUTDIR}/new-tournaments.log`,
+        JSON.stringify(logEntry) + "\n",
+      )
+    }
 
     console.log(
-      `[${new Date().toISOString()}] Wrote ${filtered.length} tournaments to ${outputFile}`,
+      `[${new Date().toISOString()}] Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
     )
   } catch (err) {
     console.error("Error fetching tournaments:", (err as AxiosError).message)
   }
 }
 
-const validateResults = validateFilters(filters)
+const validateResults = validateFilters(FILTERS)
 if (validateResults.length > 0) {
   console.error(
     `Filters validation failed. Errors :\n${validateResults.map((res) => res.message).join("\n")}`,
   )
   process.exit(1)
 }
+
+loadCache()
 run()
 
-setInterval(run, intervalMinutes * 60 * 1000)
+setInterval(run, INTERVALMINUTES * 60 * 1000)

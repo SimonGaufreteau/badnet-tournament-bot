@@ -1,11 +1,12 @@
 import axios from "axios"
 import dayjs from "dayjs"
-import { Tournament } from "./types/filter-types"
-
-const WHATSAPP_APP_ID = process.env.WHATSAPP_APP_ID || ""
-const WHATSAPP_API_URL = `https://graph.facebook.com/v22.0/${WHATSAPP_APP_ID}/messages`
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN || ""
-const WHATSAPP_DESTINATION = process.env.WHATSAPP_DESTINATION || ""
+import {
+  WHATSAPP_API_URL,
+  WHATSAPP_APP_ID,
+  WHATSAPP_DESTINATION,
+  WHATSAPP_TOKEN,
+} from "./env"
+import type { Tournament } from "./types/filter-types"
 
 const DATE_FORMAT = "DD/MM/YYYY"
 
@@ -19,7 +20,7 @@ const formatDisciplines = (t: Tournament) => t.disciplines.join(" / ")
 const formatLink = (t: Tournament) =>
   `https://badnet.fr/tournoi/public?eventid=${t.id}`
 
-export async function sendWhatsAppTournament(tournament: Tournament) {
+export const sendWhatsAppTournament = async (tournament: Tournament) => {
   try {
     console.log(`ID : ${WHATSAPP_APP_ID}`)
     // TODO : Put actual values and pass the tournament as a parameter

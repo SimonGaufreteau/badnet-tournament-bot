@@ -1,8 +1,7 @@
 import axios from "axios"
+import { BADNETORIGIN, BADNETTOKEN, PAGELIMIT } from "./env"
 import type { Filters, Tournament } from "./types/filter-types"
 import type { BadnetTournament } from "./types/payload-types"
-
-const pageLimit = parseInt(process.env.PAGE_LIMIT || "50", 10)
 
 const mapToTournaments = (data: string): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
@@ -29,7 +28,7 @@ export const fetchTournaments = async (
 ): Promise<Tournament[]> => {
   let offset = 0
   let allTournaments: Tournament[] = []
-  console.log(`Fetching with limit : ${pageLimit}`)
+  console.log(`Fetching with limit : ${PAGELIMIT}`)
 
   while (true) {
     // TODO : Write the
@@ -37,13 +36,13 @@ export const fetchTournaments = async (
       process.env.BADNET_API_URL as string,
       {
         headers: {
-          "x-badnet-origin": process.env.BADNET_ORIGIN,
-          "x-badnet-token": process.env.BADNET_TOKEN,
+          "x-badnet-origin": BADNETORIGIN,
+          "x-badnet-token": BADNETTOKEN,
         },
         params: {
           iswithpast: false,
           ligue: filters.region,
-          limit: pageLimit,
+          limit: PAGELIMIT,
           offset,
           type: "70",
           what: filters.search,
@@ -57,7 +56,7 @@ export const fetchTournaments = async (
 
     allTournaments = allTournaments.concat(tournaments)
 
-    offset += pageLimit
+    offset += PAGELIMIT
   }
 
   return allTournaments

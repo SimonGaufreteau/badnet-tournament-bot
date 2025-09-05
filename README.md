@@ -36,6 +36,7 @@ WHATSAPP_TOKEN=yourtokenhere
 WHATSAPP_APP_ID=youridhere
 WHATSAPP_DESTINATION=yourphonenumberhere
 
+CACHE_FILE=cache.json
 ```
 
 ## How to use
