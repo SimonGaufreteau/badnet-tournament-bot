@@ -5,6 +5,7 @@ import { validateFilters } from "./check"
 import { FILTERS, INTERVALMINUTES, OUTPUTDIR } from "./env"
 import { fetchTournaments } from "./fetch"
 import { filterTournaments } from "./filters"
+import { sendWhatsAppTournament } from "./whatsappClient"
 
 async function run(): Promise<void> {
   console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
@@ -27,6 +28,13 @@ async function run(): Promise<void> {
     console.log(
       `[${new Date().toISOString()}] Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
     )
+    const whatasappPromises = newTournaments.map((t) =>
+      sendWhatsAppTournament(t),
+    )
+    const result = await Promise.all(whatasappPromises)
+    if (result.length > 0) {
+      console.log(`Sent to whatsapp : ${JSON.stringify(result)}`)
+    }
   } catch (err) {
     console.error("Error fetching tournaments:", (err as AxiosError).message)
   }

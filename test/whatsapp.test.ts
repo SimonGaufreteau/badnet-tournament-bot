@@ -1,7 +1,7 @@
-import { Tournament } from "../src/types/filter-types"
+import type { Tournament } from "../src/types/filter-types"
 import { sendWhatsAppTournament } from "../src/whatsappClient"
 
-const SAMPLE_TOURNAMENT = {
+const SAMPLE_TOURNAMENT: Tournament = {
   id: "31955",
   name: "PDLL49-10ème Tournoi des Fouées-Seniors",
   openline: 1756304400,
@@ -16,12 +16,12 @@ const SAMPLE_TOURNAMENT = {
     isteam: false,
     name: "Tournoi individuel",
   },
+  minrank: "NC",
+  maxrank: "R4",
 }
 
 describe("sendWhatsAppTournament", () => {
   it("should send correct payload to WhatsApp API", async () => {
-    const result = await sendWhatsAppTournament(
-      SAMPLE_TOURNAMENT as unknown as Tournament,
-    )
+    await sendWhatsAppTournament(SAMPLE_TOURNAMENT)
   })
 })

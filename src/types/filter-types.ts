@@ -9,6 +9,8 @@ export type Tournament = {
   type: { id: number; isteam: boolean; name: string }
   openline: number
   truedeadline: number
+  minrank: string
+  maxrank: string
 }
 
 export type Filters = {

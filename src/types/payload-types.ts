@@ -1,4 +1,4 @@
-interface BadnetTournament {
+export interface BadnetTournament {
   id: string
   name: string
   onlinepayment: number
@@ -38,7 +38,7 @@ interface BadnetTournament {
   isfav: boolean
   isregistered: number
   comment: string
-  lastnews: string | null
+  lastnews: string
   info: string
   visitors: number
   website: string | null
@@ -52,7 +52,7 @@ interface BadnetTournament {
   regiligueid: number
   regiassoid: number
   catages: Category[]
-  disciplines: string[]
+  disciplines: Discipline[]
   onlylicenced: boolean
   publicschedule: number
   publicplayers: number
@@ -64,13 +64,9 @@ interface BadnetTournament {
   ligueid: number
   mailorga: string
   ispromoted: boolean
-  ageCategories: string[]
-  firstDay: number
-  lastDay: number
-  location: string
 }
 
-interface Draw {
+export interface Draw {
   id: string
   eventid: string
   name: string
@@ -95,13 +91,20 @@ interface Draw {
   fees: number
 }
 
-interface Category {
+export interface Category {
   id: number | string
   name: string
   nameshort: string
 }
 
-interface Ranking {
+export interface Discipline {
+  id: string
+  isdouble: boolean
+  name: string
+  stamp: string
+}
+
+export interface Ranking {
   name: string
   id: number
   system: number
@@ -110,5 +113,3 @@ interface Ranking {
   maxpoint: number
   maxrank: number
 }
-
-export type { BadnetTournament, Draw, Category, Ranking }

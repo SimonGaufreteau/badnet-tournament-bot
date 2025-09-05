@@ -17,12 +17,23 @@ const formatDates = (t: Tournament) =>
 
 const formatDisciplines = (t: Tournament) => t.disciplines.join(" / ")
 
+const formatRanks = (t: Tournament) => `de ${t.minrank} à ${t.maxrank}`
+
 const formatLink = (t: Tournament) =>
   `https://badnet.fr/tournoi/public?eventid=${t.id}`
 
 export const sendWhatsAppTournament = async (tournament: Tournament) => {
   try {
     console.log(`ID : ${WHATSAPP_APP_ID}`)
+    const parameters = [
+      { type: "text", text: formatDates(tournament) },
+      { type: "text", text: tournament.location },
+      { type: "text", text: formatUnix(tournament.openline) },
+      { type: "text", text: formatDisciplines(tournament) },
+      { type: "text", text: formatLink(tournament) },
+      { type: "text", text: formatRanks(tournament) },
+    ]
+    console.log(JSON.stringify(tournament))
     // TODO : Put actual values and pass the tournament as a parameter
     const response = await axios.post(
       WHATSAPP_API_URL,
@@ -40,13 +51,7 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
             },
             {
               type: "body",
-              parameters: [
-                { type: "text", text: formatDates(tournament) },
-                { type: "text", text: tournament.location },
-                { type: "text", text: formatUnix(tournament.openline) },
-                { type: "text", text: formatDisciplines(tournament) },
-                { type: "text", text: formatLink(tournament) },
-              ],
+              parameters,
             },
             // {
             //   type: "button",
