@@ -1,11 +1,6 @@
 import axios from "axios"
 import dayjs from "dayjs"
-import {
-  WHATSAPP_API_URL,
-  WHATSAPP_APP_ID,
-  WHATSAPP_DESTINATION,
-  WHATSAPP_TOKEN,
-} from "./env"
+import { WHATSAPP_API_URL, WHATSAPP_DESTINATION, WHATSAPP_TOKEN } from "./env"
 import type { Tournament } from "./types/filter-types"
 
 const DATE_FORMAT = "DD/MM/YYYY"
@@ -24,7 +19,6 @@ const formatLink = (t: Tournament) =>
 
 export const sendWhatsAppTournament = async (tournament: Tournament) => {
   try {
-    console.log(`ID : ${WHATSAPP_APP_ID}`)
     const parameters = [
       { type: "text", text: formatDates(tournament) },
       { type: "text", text: tournament.location },
@@ -33,8 +27,6 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
       { type: "text", text: formatLink(tournament) },
       { type: "text", text: formatRanks(tournament) },
     ]
-    console.log(JSON.stringify(tournament))
-    // TODO : Put actual values and pass the tournament as a parameter
     const response = await axios.post(
       WHATSAPP_API_URL,
       {
@@ -53,12 +45,6 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
               type: "body",
               parameters,
             },
-            // {
-            //   type: "button",
-            //   sub_type: "url",
-            //   index: "0",
-            //   parameters: [{ type: "text", text: tournament.id }],
-            // },
           ],
         },
       },

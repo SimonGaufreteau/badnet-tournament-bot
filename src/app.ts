@@ -7,7 +7,7 @@ import { fetchTournaments } from "./fetch"
 import { filterTournaments } from "./filters"
 import { sendWhatsAppTournament } from "./whatsappClient"
 
-async function run(): Promise<void> {
+const run = async (): Promise<void> => {
   console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
 
   try {

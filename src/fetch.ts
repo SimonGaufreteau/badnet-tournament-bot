@@ -59,7 +59,6 @@ export const fetchTournaments = async (
   console.log(`Fetching with limit : ${PAGELIMIT}`)
 
   while (true) {
-    // TODO : Write the
     const response = await axios.get<Tournament[]>(
       process.env.BADNET_API_URL as string,
       {
