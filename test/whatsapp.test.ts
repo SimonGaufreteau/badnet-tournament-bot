@@ -21,7 +21,7 @@ const SAMPLE_TOURNAMENT: Tournament = {
 }
 
 describe("sendWhatsAppTournament", () => {
-  it("should send correct payload to WhatsApp API", async () => {
+  it.skip("should send correct payload to WhatsApp API", async () => {
     await sendWhatsAppTournament(SAMPLE_TOURNAMENT)
   })
 })

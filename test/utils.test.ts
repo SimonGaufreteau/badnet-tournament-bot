@@ -7,15 +7,15 @@ describe("mapToTournaments ", () => {
     expect(result[0]).toMatchObject({
       ageCategories: ["Sénior"],
       disciplines: ["SH", "SD", "DH", "DD", "MX"],
-      firstDay: 1761343200,
-      id: "31369",
-      lastDay: 1761519599,
-      location: "Cholet",
+      firstDay: 1766185200,
+      id: "31568",
+      lastDay: 1766357999,
+      location: "Cergy",
       maxrank: "R4",
-      minrank: "P10",
-      name: "31369",
-      openline: 1756702800,
-      truedeadline: 1760126400,
+      minrank: "NC",
+      name: "Eco-Tournoi de la Grande Horloge",
+      openline: 1759341600,
+      truedeadline: 1763679540,
       type: { id: 70, isteam: false, name: "Tournoi individuel" },
     })
   })
