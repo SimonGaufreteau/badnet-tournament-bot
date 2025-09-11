@@ -51,4 +51,6 @@ if (validateResults.length > 0) {
 loadCache()
 run()
 
-setInterval(run, INTERVALMINUTES * 60 * 1000)
+const interval = INTERVALMINUTES * 60 * 1000
+console.info(`Starting run every ${interval} minutes`)
+setInterval(run, interval)
