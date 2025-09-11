@@ -44,8 +44,9 @@ export const scrapeBadnet = async () => {
           const openInMatch = limitText.match(/dans (\d+ jours?)/)
           return {
             id:
-              Number.parseInt(item.getAttribute("id")?.replace("event-", "")) ||
-              0,
+              Number.parseInt(
+                item.getAttribute("id")?.replace("event-", "") || "0",
+              ) || 0,
             name: item.querySelector(".name")?.textContent?.trim() || "",
             location:
               item.querySelector(".location")?.textContent?.trim() || "",
