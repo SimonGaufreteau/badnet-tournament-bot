@@ -7,6 +7,9 @@ const DATE_FORMAT = "DD/MM/YYYY"
 
 const formatUnix = (u: number) => dayjs.unix(u).format(DATE_FORMAT)
 
+const headerName = "Nouveau tournoi : "
+const formatHeader = (n: string) => n.slice(0, 60 - headerName.length)
+
 const formatDates = (t: Tournament) =>
   `du ${formatUnix(t.firstDay)} au ${formatUnix(t.lastDay)}`
 
@@ -29,6 +32,7 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
       { type: "text", text: formatDisciplines(tournament) },
       { type: "text", text: formatLink(tournament) },
       { type: "text", text: formatRanks(tournament) },
+      { type: "text", text: tournament.name },
     ]
     const sendMessage = (destination: string) =>
       axios.post(
@@ -43,7 +47,9 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
             components: [
               {
                 type: "header",
-                parameters: [{ type: "text", text: tournament.name }],
+                parameters: [
+                  { type: "text", text: formatHeader(tournament.name) },
+                ],
               },
               {
                 type: "body",
