@@ -18,6 +18,9 @@ const formatLink = (t: Tournament) =>
   `https://badnet.fr/tournoi/public?eventid=${t.id}`
 
 export const sendWhatsAppTournament = async (tournament: Tournament) => {
+  console.log(
+    `Sending tournament ${tournament.name} to ${WHATSAPP_DESTINATION}`,
+  )
   try {
     const parameters = [
       { type: "text", text: formatDates(tournament) },
@@ -27,37 +30,40 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
       { type: "text", text: formatLink(tournament) },
       { type: "text", text: formatRanks(tournament) },
     ]
-    const response = await axios.post(
-      WHATSAPP_API_URL,
-      {
-        messaging_product: "whatsapp",
-        to: WHATSAPP_DESTINATION,
-        type: "template",
-        template: {
-          name: "badnetlink",
-          language: { code: "fr" },
-          components: [
-            {
-              type: "header",
-              parameters: [{ type: "text", text: tournament.name }],
-            },
-            {
-              type: "body",
-              parameters,
-            },
-          ],
+    const sendMessage = (destination: string) =>
+      axios.post(
+        WHATSAPP_API_URL,
+        {
+          messaging_product: "whatsapp",
+          to: destination,
+          type: "template",
+          template: {
+            name: "badnetlink",
+            language: { code: "fr" },
+            components: [
+              {
+                type: "header",
+                parameters: [{ type: "text", text: tournament.name }],
+              },
+              {
+                type: "body",
+                parameters,
+              },
+            ],
+          },
         },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
-          "Content-Type": "application/json",
+        {
+          headers: {
+            Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
+      )
+    const promises = WHATSAPP_DESTINATION.map(sendMessage)
+    const responses = await Promise.all(promises)
 
-    console.log("Message sent:", response.data)
-    return response.data
+    console.log("Message sent:", JSON.stringify(responses.map((r) => r.data)))
+    return responses
   } catch (error: any) {
     console.error(
       "Error sending WhatsApp message:",

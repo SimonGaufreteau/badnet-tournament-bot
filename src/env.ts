@@ -18,7 +18,8 @@ export const FILTERS: Filters = {
 const WHATSAPP_APP_ID = process.env.WHATSAPP_APP_ID || ""
 const WHATSAPP_API_URL = `https://graph.facebook.com/v22.0/${WHATSAPP_APP_ID}/messages`
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN || ""
-const WHATSAPP_DESTINATION = process.env.WHATSAPP_DESTINATION || ""
+const WHATSAPP_DESTINATION =
+  (process.env.WHATSAPP_DESTINATION || "").split(",") || ""
 
 const BADNETAPIURL = process.env.BADNET_API_URL || ""
 const BADNETORIGIN = process.env.BADNET_ORIGIN

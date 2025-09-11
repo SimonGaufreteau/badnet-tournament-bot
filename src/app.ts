@@ -31,10 +31,7 @@ const run = async (): Promise<void> => {
     const whatasappPromises = newTournaments.map((t) =>
       sendWhatsAppTournament(t),
     )
-    const result = await Promise.all(whatasappPromises)
-    if (result.length > 0) {
-      console.log(`Sent to whatsapp : ${JSON.stringify(result)}`)
-    }
+    await Promise.all(whatasappPromises)
   } catch (err) {
     console.error("Error fetching tournaments:", (err as AxiosError).message)
   }
