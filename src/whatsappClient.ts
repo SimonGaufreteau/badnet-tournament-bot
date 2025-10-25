@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import { WHATSAPP_API_URL, WHATSAPP_DESTINATION, WHATSAPP_TOKEN } from "./env"
 import type { Tournament } from "./types/filter-types"
 
-const DATE_FORMAT = "DD/MM/YYYY"
+const DATE_FORMAT = "DD/MM/YYYY HH:mm"
 
 const formatUnix = (u: number) => dayjs.unix(u).format(DATE_FORMAT)
 
