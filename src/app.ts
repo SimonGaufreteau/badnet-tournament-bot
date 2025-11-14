@@ -23,6 +23,10 @@ const run = async (): Promise<void> => {
         `${OUTPUTDIR}/new-tournaments.log`,
         JSON.stringify(logEntry) + "\n",
       )
+      fs.appendFileSync(
+        `${OUTPUTDIR}/full-new-tournaments.log`,
+        JSON.stringify(newTournaments) + "\n",
+      )
     }
 
     console.log(
