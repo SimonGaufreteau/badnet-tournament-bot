@@ -3,15 +3,17 @@ import dayjs from "dayjs"
 import { WHATSAPP_API_URL, WHATSAPP_DESTINATION, WHATSAPP_TOKEN } from "./env"
 import type { Tournament } from "./types/filter-types"
 
-const DATE_FORMAT = "DD/MM/YYYY HH:mm"
+const DATE_FORMAT_HOUR = "DD/MM/YYYY HH:mm"
+const DATE_FORMAT = "DD/MM/YYYY"
 
-const formatUnix = (u: number) => dayjs.unix(u).format(DATE_FORMAT)
+const formatUnix = (u: number, dateFormat: string) =>
+  dayjs.unix(u).format(dateFormat)
 
 const headerName = "" //"Nouveau tournoi : "
 const formatHeader = (n: string) => n.slice(0, 60 - headerName.length)
 
 const formatDates = (t: Tournament) =>
-  `du ${formatUnix(t.firstDay)} au ${formatUnix(t.lastDay)}`
+  `du ${formatUnix(t.firstDay, DATE_FORMAT)} au ${formatUnix(t.lastDay, DATE_FORMAT)}`
 
 const formatDisciplines = (t: Tournament) => t.disciplines.join(" / ")
 
@@ -28,7 +30,7 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
     const parameters = [
       { type: "text", text: formatDates(tournament) },
       { type: "text", text: tournament.location },
-      { type: "text", text: formatUnix(tournament.openline) },
+      { type: "text", text: formatUnix(tournament.openline, DATE_FORMAT_HOUR) },
       { type: "text", text: formatDisciplines(tournament) },
       { type: "text", text: formatLink(tournament) },
       { type: "text", text: formatRanks(tournament) },
