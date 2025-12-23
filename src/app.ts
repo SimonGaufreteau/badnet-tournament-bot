@@ -2,16 +2,40 @@ import fs from "node:fs"
 import type { AxiosError } from "axios"
 import { filterNewTournaments, loadCache } from "./cache"
 import { validateFilters } from "./check"
-import { FILTERS, INTERVALMINUTES, OUTPUTDIR } from "./env"
-import { fetchTournaments } from "./fetch"
+import { FILTERS, INTERVALMINUTES, OUTPUTDIR, DISCORD_REGION_CHANNELS } from "./env"
+import { fetchTournaments, fetchTournamentsForRegions } from "./fetch"
 import { filterTournaments } from "./filters"
-import { sendWhatsAppTournament } from "./whatsappClient"
+import { WhatsAppSender } from "./senders/whatsappSender"
+import { DiscordSender } from "./senders/discordSender"
+import type { Sender } from "./senders/sender"
+
+const senders: Sender[] = []
+
+// Initialize senders based on environment variables
+if (process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_DESTINATION) {
+  senders.push(new WhatsAppSender())
+}
+
+if (process.env.DISCORD_TOKEN && process.env.DISCORD_CHANNEL_ID) {
+  senders.push(new DiscordSender())
+}
 
 const run = async (): Promise<void> => {
   console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
 
   try {
-    const tournaments = await fetchTournaments(FILTERS)
+    let tournaments
+    
+    // If Discord region channels are configured, fetch for all regions
+    if (DISCORD_REGION_CHANNELS) {
+      const regions = DISCORD_REGION_CHANNELS.split(",").map(mapping => 
+        mapping.split(":")[0].trim()
+      )
+      tournaments = await fetchTournamentsForRegions(FILTERS, regions)
+    } else {
+      tournaments = await fetchTournaments(FILTERS)
+    }
+    
     const filtered = filterTournaments(tournaments, FILTERS)
     const newTournaments = filterNewTournaments(filtered)
 
@@ -32,10 +56,11 @@ const run = async (): Promise<void> => {
     console.log(
       `[${new Date().toISOString()}] Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
     )
-    const whatasappPromises = newTournaments.map((t) =>
-      sendWhatsAppTournament(t),
+    
+    const sendPromises = newTournaments.flatMap((tournament) =>
+      senders.map((sender) => sender.send(tournament))
     )
-    await Promise.all(whatasappPromises)
+    await Promise.all(sendPromises)
   } catch (err) {
     console.error("Error fetching tournaments:", (err as AxiosError).message)
   }

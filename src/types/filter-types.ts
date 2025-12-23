@@ -11,6 +11,7 @@ export type Tournament = {
   truedeadline: number
   minrank: string
   maxrank: string
+  region?: string
 }
 
 export type Filters = {

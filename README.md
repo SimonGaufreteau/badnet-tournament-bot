@@ -4,7 +4,7 @@
 
 Periodically fetches the Badnet API for new tournament.
 
-Currently writes to a file, the plan is to send new tournaments to Whatsapp
+Currently supports sending notifications to WhatsApp and Discord with similar formatting.
 
 ## Requirements
 
@@ -35,6 +35,10 @@ OUTPUT_DIR=
 WHATSAPP_TOKEN=yourtokenhere
 WHATSAPP_APP_ID=youridhere
 WHATSAPP_DESTINATION=yourphonenumberhere
+
+DISCORD_TOKEN=yourdiscordtokenhere
+DISCORD_CHANNEL_ID=yourchannelid
+DISCORD_REGION_CHANNELS=PDLL:channelid1,AURA:channelid2,PACA:channelid3
 
 CACHE_FILE=cache.json
 ```
@@ -68,6 +72,22 @@ Les infos peuvent changer, vérifiez sur le lien ci-dessus !
 ```
 
 - Put some data in the examples, doesn't matter. Then press send, make sure it's approved.
+
+### Setting up Discord
+
+- Create a new Discord application at https://discord.com/developers/applications
+- Go to the "Bot" section and create a bot
+- Copy the bot token for `DISCORD_TOKEN`
+- Enable the "Send Messages" permission for your bot
+- Invite the bot to your server with the appropriate permissions
+- Get the channel ID where you want to send messages for `DISCORD_CHANNEL_ID`
+  - Enable Developer Mode in Discord settings
+  - Right-click on the channel and select "Copy ID"
+- Optional: Configure region-specific channels using `DISCORD_REGION_CHANNELS`
+  - Format: `REGION1:channelid1,REGION2:channelid2`
+  - Example: `PDLL:123456789,AURA:987654321,PACA:555666777`
+  - When configured, the bot will fetch tournaments for all specified regions and send them to their respective channels
+  - Available regions: AURA, BOFC, BRET, CVDL, GEST, GUA, GUY, HFRA, LIFB, MAR, NAQU, NCAL, NORM, OCCI, REU, PDLL, PACA
 
 ### Getting your badnet token
 

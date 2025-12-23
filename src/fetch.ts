@@ -19,7 +19,7 @@ const RANKINGS: Record<string, number> = {
   NC: 13,
 }
 
-export const mapToTournaments = (data: string): Tournament[] => {
+export const mapToTournaments = (data: string, region?: string): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
   return parsed.events.map((event: BadnetTournament) => ({
     id: event.id,
@@ -48,6 +48,7 @@ export const mapToTournaments = (data: string): Tournament[] => {
         value: RANKINGS[d.maxranking.name],
       }))
       .sort((a, b) => a.value - b.value)[0].name,
+    region,
   }))
 }
 
@@ -74,7 +75,7 @@ export const fetchTournaments = async (
           type: "70",
           what: filters.search,
         },
-        transformResponse: mapToTournaments,
+        transformResponse: (data) => mapToTournaments(data, filters.region),
       },
     )
 
@@ -87,4 +88,15 @@ export const fetchTournaments = async (
   }
 
   return allTournaments
+}
+
+export const fetchTournamentsForRegions = async (
+  filters: Filters,
+  regions: string[],
+): Promise<Tournament[]> => {
+  const promises = regions.map(region => 
+    fetchTournaments({ ...filters, region })
+  )
+  const results = await Promise.all(promises)
+  return results.flat()
 }
