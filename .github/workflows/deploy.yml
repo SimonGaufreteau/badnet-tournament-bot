@@ -18,6 +18,7 @@ jobs:
           script: |
             cd /home/ubuntu/repos/badnet-tournament-bot
             git pull origin main
+            source ~/.bashrc
             npm install
             npm run build
             pm2 restart ffbad-bot || pm2 start dist/app.js --name ffbad-bot
