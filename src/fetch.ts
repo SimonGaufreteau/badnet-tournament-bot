@@ -1,5 +1,5 @@
 import axios from "axios"
-import { BADNETORIGIN, BADNETTOKEN, PAGELIMIT } from "./env"
+import { BADNETORIGIN, BADNETTOKEN, PAGELIMIT, REGION_FETCH_DELAY_SECONDS } from "./env"
 import type { Filters, Tournament } from "./types/filter-types"
 import type { BadnetTournament } from "./types/payload-types"
 
@@ -97,9 +97,19 @@ export const fetchTournamentsForRegions = async (
   filters: Filters,
   regions: string[],
 ): Promise<Tournament[]> => {
-  const promises = regions.map((region) =>
-    fetchTournaments({ ...filters, region }),
-  )
-  const results = await Promise.all(promises)
-  return results.flat()
+  const allTournaments: Tournament[] = []
+
+  for (const region of regions) {
+    console.log(`Fetching tournaments for region: ${region}`)
+    const tournaments = await fetchTournaments({ ...filters, region })
+    allTournaments.push(...tournaments)
+
+    // Wait before next region (except for the last one)
+    if (region !== regions[regions.length - 1]) {
+      console.log(`Waiting ${REGION_FETCH_DELAY_SECONDS} seconds before next region...`)
+      await new Promise((resolve) => setTimeout(resolve, REGION_FETCH_DELAY_SECONDS * 1000))
+    }
+  }
+
+  return allTournaments
 }
