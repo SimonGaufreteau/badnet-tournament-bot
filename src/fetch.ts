@@ -1,5 +1,10 @@
 import axios from "axios"
-import { BADNETORIGIN, BADNETTOKEN, PAGELIMIT, REGION_FETCH_DELAY_SECONDS } from "./env"
+import {
+  BADNETORIGIN,
+  BADNETTOKEN,
+  PAGELIMIT,
+  REGION_FETCH_DELAY_SECONDS,
+} from "./env"
 import type { Filters, Tournament } from "./types/filter-types"
 import type { BadnetTournament } from "./types/payload-types"
 
@@ -24,35 +29,49 @@ export const mapToTournaments = (
   region?: string,
 ): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
-  return parsed.events.map((event: BadnetTournament) => ({
-    id: event.id,
-    name: event.name,
-    openline: event.openline,
-    truedeadline: event.truedeadline,
-    ageCategories: event.catages.map((c) => c.name),
-    disciplines: event.disciplines.map((d) => d.stamp),
-    firstDay: event.firstday,
-    lastDay: event.lastday,
-    location: event.place.location,
-    type: {
-      id: event.type.id,
-      isteam: event.type.isteam,
-      name: event.type.name,
-    },
-    minrank: event.draws
-      .map((d) => ({
-        name: d.minranking.name,
-        value: RANKINGS[d.minranking.name],
-      }))
-      .sort((a, b) => b.value - a.value)[0].name,
-    maxrank: event.draws
-      .map((d) => ({
-        name: d.maxranking.name,
-        value: RANKINGS[d.maxranking.name],
-      }))
-      .sort((a, b) => a.value - b.value)[0].name,
-    region,
-  }))
+  return parsed.events.map((event: BadnetTournament) => {
+    // Debug missing ranking data
+    const hasInvalidDraws = event.draws.some(
+      (d) => !d.minranking?.name || !d.maxranking?.name,
+    )
+    if (hasInvalidDraws) {
+      console.warn(
+        `Tournament ${event.name} in ${region} has invalid ranking data`,
+      )
+    }
+
+    return {
+      id: event.id,
+      name: event.name,
+      openline: event.openline,
+      truedeadline: event.truedeadline,
+      ageCategories: event.catages.map((c) => c.name),
+      disciplines: event.disciplines.map((d) => d.stamp),
+      firstDay: event.firstday,
+      lastDay: event.lastday,
+      location: event.place.location,
+      type: {
+        id: event.type.id,
+        isteam: event.type.isteam,
+        name: event.type.name,
+      },
+      minrank:
+        event.draws
+          .map((d) => ({
+            name: d.minranking?.name || "NC",
+            value: RANKINGS[d.minranking?.name] || RANKINGS.NC,
+          }))
+          .sort((a, b) => b.value - a.value)[0]?.name || "NC",
+      maxrank:
+        event.draws
+          .map((d) => ({
+            name: d.maxranking?.name || "NC",
+            value: RANKINGS[d.maxranking?.name] || RANKINGS.NC,
+          }))
+          .sort((a, b) => a.value - b.value)[0]?.name || "NC",
+      region,
+    }
+  })
 }
 
 export const fetchTournaments = async (
@@ -106,8 +125,12 @@ export const fetchTournamentsForRegions = async (
 
     // Wait before next region (except for the last one)
     if (region !== regions[regions.length - 1]) {
-      console.log(`Waiting ${REGION_FETCH_DELAY_SECONDS} seconds before next region...`)
-      await new Promise((resolve) => setTimeout(resolve, REGION_FETCH_DELAY_SECONDS * 1000))
+      console.log(
+        `Waiting ${REGION_FETCH_DELAY_SECONDS} seconds before next region...`,
+      )
+      await new Promise((resolve) =>
+        setTimeout(resolve, REGION_FETCH_DELAY_SECONDS * 1000),
+      )
     }
   }
 
