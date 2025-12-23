@@ -85,4 +85,5 @@ run()
 
 const interval = INTERVALMINUTES
 console.info(`Starting run every ${interval} minutes`)
+console.info("Deployment test - workflow is working!")
 setInterval(run, interval * 60 * 1000)
