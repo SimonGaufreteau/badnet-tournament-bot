@@ -11,7 +11,7 @@ export class DiscordSender implements Sender {
 
   constructor() {
     this.client = new Client({ intents: [GatewayIntentBits.Guilds] })
-    this.client.once("ready", () => {
+    this.client.once("clientReady", () => {
       console.log("Discord bot ready")
       this.ready = true
     })
@@ -30,7 +30,7 @@ export class DiscordSender implements Sender {
 
   async send(tournament: Tournament): Promise<void> {
     if (!this.ready) {
-      await new Promise(resolve => this.client.once("ready", resolve))
+      await new Promise(resolve => this.client.once("clientReady", resolve))
     }
 
     console.log(`Sending tournament ${tournament.name} to Discord`)
