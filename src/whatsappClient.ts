@@ -71,10 +71,11 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
 
     console.log("Message sent:", JSON.stringify(responses.map((r) => r.data)))
     return responses
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { data?: unknown } }
     console.error(
       "Error sending WhatsApp message:",
-      error.response?.data || error.message,
+      axiosError.response?.data || (error as Error).message,
     )
     throw error
   }

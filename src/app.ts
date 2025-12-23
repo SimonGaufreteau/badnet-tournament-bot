@@ -2,12 +2,18 @@ import fs from "node:fs"
 import type { AxiosError } from "axios"
 import { filterNewTournaments, loadCache } from "./cache"
 import { validateFilters } from "./check"
-import { FILTERS, INTERVALMINUTES, OUTPUTDIR, DISCORD_REGION_CHANNELS } from "./env"
+import {
+  DISCORD_REGION_CHANNELS,
+  FILTERS,
+  INTERVALMINUTES,
+  OUTPUTDIR,
+} from "./env"
 import { fetchTournaments, fetchTournamentsForRegions } from "./fetch"
 import { filterTournaments } from "./filters"
-import { WhatsAppSender } from "./senders/whatsappSender"
 import { DiscordSender } from "./senders/discordSender"
 import type { Sender } from "./senders/sender"
+import { WhatsAppSender } from "./senders/whatsappSender"
+import type { Tournament } from "./types/filter-types"
 
 const senders: Sender[] = []
 
@@ -24,18 +30,18 @@ const run = async (): Promise<void> => {
   console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
 
   try {
-    let tournaments
-    
+    let tournaments: Tournament[] = []
+
     // If Discord region channels are configured, fetch for all regions
     if (DISCORD_REGION_CHANNELS) {
-      const regions = DISCORD_REGION_CHANNELS.split(",").map(mapping => 
-        mapping.split(":")[0].trim()
+      const regions = DISCORD_REGION_CHANNELS.split(",").map((mapping) =>
+        mapping.split(":")[0].trim(),
       )
       tournaments = await fetchTournamentsForRegions(FILTERS, regions)
     } else {
       tournaments = await fetchTournaments(FILTERS)
     }
-    
+
     const filtered = filterTournaments(tournaments, FILTERS)
     const newTournaments = filterNewTournaments(filtered)
 
@@ -45,20 +51,20 @@ const run = async (): Promise<void> => {
       const logEntry = { [timestamp]: newTournaments.map((t) => t.id) }
       fs.appendFileSync(
         `${OUTPUTDIR}/new-tournaments.log`,
-        JSON.stringify(logEntry) + "\n",
+        `${JSON.stringify(logEntry)}\n`,
       )
       fs.appendFileSync(
         `${OUTPUTDIR}/full-new-tournaments.log`,
-        JSON.stringify(newTournaments) + "\n",
+        `${JSON.stringify(newTournaments)}\n`,
       )
     }
 
     console.log(
       `[${new Date().toISOString()}] Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
     )
-    
+
     const sendPromises = newTournaments.flatMap((tournament) =>
-      senders.map((sender) => sender.send(tournament))
+      senders.map((sender) => sender.send(tournament)),
     )
     await Promise.all(sendPromises)
   } catch (err) {

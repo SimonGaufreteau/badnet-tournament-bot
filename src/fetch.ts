@@ -19,7 +19,10 @@ const RANKINGS: Record<string, number> = {
   NC: 13,
 }
 
-export const mapToTournaments = (data: string, region?: string): Tournament[] => {
+export const mapToTournaments = (
+  data: string,
+  region?: string,
+): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
   return parsed.events.map((event: BadnetTournament) => ({
     id: event.id,
@@ -94,8 +97,8 @@ export const fetchTournamentsForRegions = async (
   filters: Filters,
   regions: string[],
 ): Promise<Tournament[]> => {
-  const promises = regions.map(region => 
-    fetchTournaments({ ...filters, region })
+  const promises = regions.map((region) =>
+    fetchTournaments({ ...filters, region }),
   )
   const results = await Promise.all(promises)
   return results.flat()

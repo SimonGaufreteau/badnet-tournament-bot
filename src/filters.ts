@@ -28,6 +28,6 @@ const filterClosedTournaments = (
 
 const filterAgeCategories = (t: Tournament, { ageCategories }: Filters) => {
   const validCategories = new Set(ageCategories)
-  if (ageCategories.length == 0) return true
+  if (ageCategories.length === 0) return true
   return t.ageCategories.filter((cat) => validCategories.has(cat)).length > 0
 }

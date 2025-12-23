@@ -8,7 +8,9 @@ export const loadCache = (): void => {
   try {
     const data = fs.readFileSync(CACHEFILE, "utf8")
     const ids: string[] = JSON.parse(data)
-    ids.forEach((id) => cache.add(id))
+    ids.forEach((id) => {
+      cache.add(id)
+    })
   } catch {
     cache.clear()
   }

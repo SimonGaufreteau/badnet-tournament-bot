@@ -12,7 +12,7 @@ export interface BadnetTournament {
   isregiclose: boolean
   firstday: number
   lastday: number
-  docs: any[]
+  docs: unknown[]
   regi_nosingledouble: number
   regi_nosinglemixed: number
   regi_nodoublemixed: number
@@ -22,7 +22,7 @@ export interface BadnetTournament {
     location: string
     convocplace: string | null
     dpt: number
-    sporthalls: any[]
+    sporthalls: unknown[]
   }
   type: {
     id: number

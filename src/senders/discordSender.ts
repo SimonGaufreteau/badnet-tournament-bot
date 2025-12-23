@@ -1,8 +1,18 @@
-import { Client, GatewayIntentBits, TextChannel } from "discord.js"
-import { DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_REGION_CHANNELS } from "../env"
+import { Client, GatewayIntentBits, type TextChannel } from "discord.js"
+import {
+  DISCORD_CHANNEL_ID,
+  DISCORD_REGION_CHANNELS,
+  DISCORD_TOKEN,
+} from "../env"
 import type { Tournament } from "../types/filter-types"
+import {
+  formatDates,
+  formatDisciplines,
+  formatLink,
+  formatOpenline,
+  formatRanks,
+} from "../utils/formatters"
 import type { Sender } from "./sender"
-import { formatDates, formatDisciplines, formatLink, formatOpenline, formatRanks } from "../utils/formatters"
 
 export class DiscordSender implements Sender {
   private client: Client
@@ -19,7 +29,7 @@ export class DiscordSender implements Sender {
 
     // Parse region channels: "PDLL:channelid1,AURA:channelid2"
     if (DISCORD_REGION_CHANNELS) {
-      DISCORD_REGION_CHANNELS.split(",").forEach(mapping => {
+      DISCORD_REGION_CHANNELS.split(",").forEach((mapping) => {
         const [region, channelId] = mapping.split(":")
         if (region && channelId) {
           this.regionChannels[region.trim()] = channelId.trim()
@@ -30,16 +40,20 @@ export class DiscordSender implements Sender {
 
   async send(tournament: Tournament): Promise<void> {
     if (!this.ready) {
-      await new Promise(resolve => this.client.once("clientReady", resolve))
+      await new Promise((resolve) => this.client.once("clientReady", resolve))
     }
 
     console.log(`Sending tournament ${tournament.name} to Discord`)
-    
+
     try {
       // Use region-specific channel if available, otherwise fallback to default
-      const channelId = (tournament.region && this.regionChannels[tournament.region]) || DISCORD_CHANNEL_ID
-      const channel = await this.client.channels.fetch(channelId) as TextChannel
-      
+      const channelId =
+        (tournament.region && this.regionChannels[tournament.region]) ||
+        DISCORD_CHANNEL_ID
+      const channel = (await this.client.channels.fetch(
+        channelId,
+      )) as TextChannel
+
       const message = `**Nouveau tournoi : ${tournament.name}**
 
 **Dates du tournoi :** ${formatDates(tournament)}
@@ -53,8 +67,8 @@ Les infos peuvent changer, vérifiez sur le lien ci-dessus !`
 
       await channel.send(message)
       console.log("Discord message sent")
-    } catch (error: any) {
-      console.error("Error sending Discord message:", error.message)
+    } catch (error: unknown) {
+      console.error("Error sending Discord message:", (error as Error).message)
       throw error
     }
   }
