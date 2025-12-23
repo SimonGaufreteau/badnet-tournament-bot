@@ -14,6 +14,19 @@ import {
 } from "../utils/formatters"
 import type { Sender } from "./sender"
 
+const formatDiscordMessage = (tournament: Tournament): string => {
+  return `*Nouveau tournoi : ${tournament.name}*
+
+🗓 *Dates* : ${formatDates(tournament)}
+📍 *Lieu* : ${tournament.location}
+🕐 *Ouverture* : ${formatOpenline(tournament)}
+🏸 *Tableaux* : ${formatDisciplines(tournament)}
+📈 *Classements* : ${formatRanks(tournament)}
+🔗 *Lien* : ${formatLink(tournament)}
+
+Les infos peuvent changer, vérifiez sur le lien ci-dessus !`
+}
+
 export class DiscordSender implements Sender {
   private client: Client
   private ready = false
@@ -54,16 +67,7 @@ export class DiscordSender implements Sender {
         channelId,
       )) as TextChannel
 
-      const message = `**Nouveau tournoi : ${tournament.name}**
-
-**Dates du tournoi :** ${formatDates(tournament)}
-**Emplacement :** ${tournament.location}
-**Ouverture des inscriptions :** ${formatOpenline(tournament)}
-**Disciplines :** ${formatDisciplines(tournament)}
-**Classements :** ${formatRanks(tournament)}
-**Lien :** ${formatLink(tournament)}
-
-Les infos peuvent changer, vérifiez sur le lien ci-dessus !`
+      const message = formatDiscordMessage(tournament)
 
       await channel.send(message)
       console.log("Discord message sent")
