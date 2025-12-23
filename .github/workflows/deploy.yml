@@ -16,9 +16,9 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            export PATH="/home/ubuntu/.nvm/versions/node/v22.21.1/bin:$PATH"
             cd /home/ubuntu/repos/badnet-tournament-bot
             git pull origin main
-            source ~/.bashrc
             npm install
             npm run build
             pm2 restart ffbad-bot || pm2 start dist/app.js --name ffbad-bot
