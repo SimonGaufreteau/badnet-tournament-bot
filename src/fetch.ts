@@ -6,6 +6,7 @@ import {
   REGION_FETCH_DELAY_SECONDS,
 } from "./env"
 import { tournamentDb } from "./database"
+import { logger } from "./logger"
 import type { Filters, Tournament } from "./types/filter-types"
 import type { BadnetTournament } from "./types/payload-types"
 
@@ -44,7 +45,7 @@ export const mapToTournaments = (
       (d) => !d.minranking?.name || !d.maxranking?.name,
     )
     if (hasInvalidDraws) {
-      console.warn(
+      logger.warn(
         `Tournament ${event.name} in ${region} has invalid ranking data`,
       )
     }
@@ -88,7 +89,7 @@ export const fetchTournaments = async (
 ): Promise<Tournament[]> => {
   let offset = 0
   let allTournaments: Tournament[] = []
-  console.log(`Fetching with limit : ${PAGELIMIT}`)
+  logger.info(`Fetching with limit : ${PAGELIMIT}`)
 
   while (true) {
     const response = await axios.get<Tournament[]>(
@@ -128,13 +129,13 @@ export const fetchTournamentsForRegions = async (
   const allTournaments: Tournament[] = []
 
   for (const region of regions) {
-    console.log(`Fetching tournaments for region: ${region}`)
+    logger.info(`Fetching tournaments for region: ${region}`)
     const tournaments = await fetchTournaments({ ...filters, region })
     allTournaments.push(...tournaments)
 
     // Wait before next region (except for the last one)
     if (region !== regions[regions.length - 1]) {
-      console.log(
+      logger.info(
         `Waiting ${REGION_FETCH_DELAY_SECONDS} seconds before next region...`,
       )
       await new Promise((resolve) =>

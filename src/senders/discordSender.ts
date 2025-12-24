@@ -4,6 +4,7 @@ import {
   DISCORD_REGION_CHANNELS,
   DISCORD_TOKEN,
 } from "../env"
+import { logger } from "../logger"
 import type { Tournament } from "../types/filter-types"
 import {
   formatDates,
@@ -35,7 +36,7 @@ export class DiscordSender implements Sender {
   constructor() {
     this.client = new Client({ intents: [GatewayIntentBits.Guilds] })
     this.client.once("clientReady", () => {
-      console.log("Discord bot ready")
+      logger.info("Discord bot ready")
       this.ready = true
     })
     this.client.login(DISCORD_TOKEN)
@@ -56,7 +57,7 @@ export class DiscordSender implements Sender {
       await new Promise((resolve) => this.client.once("clientReady", resolve))
     }
 
-    console.log(`Sending tournament ${tournament.name} to Discord`)
+    logger.info(`Sending tournament ${tournament.name} to Discord`)
 
     try {
       // Use region-specific channel if available, otherwise fallback to default
@@ -70,9 +71,9 @@ export class DiscordSender implements Sender {
       const message = formatDiscordMessage(tournament)
 
       await channel.send(message)
-      console.log("Discord message sent")
+      logger.info("Discord message sent")
     } catch (error: unknown) {
-      console.error("Error sending Discord message:", (error as Error).message)
+      logger.error("Error sending Discord message:", (error as Error).message)
       throw error
     }
   }

@@ -1,5 +1,6 @@
 import axios from "axios"
 import { WHATSAPP_API_URL, WHATSAPP_DESTINATION, WHATSAPP_TOKEN } from "../env"
+import { logger } from "../logger"
 import type { Tournament } from "../types/filter-types"
 import {
   formatDates,
@@ -15,7 +16,7 @@ const formatHeader = (n: string) => n.slice(0, 60 - headerName.length)
 
 export class WhatsAppSender implements Sender {
   async send(tournament: Tournament): Promise<void> {
-    console.log(
+    logger.info(
       `Sending tournament ${tournament.name} to WhatsApp ${WHATSAPP_DESTINATION}`,
     )
     try {
@@ -61,13 +62,13 @@ export class WhatsAppSender implements Sender {
       const promises = WHATSAPP_DESTINATION.map(sendMessage)
       const responses = await Promise.all(promises)
 
-      console.log(
+      logger.info(
         "WhatsApp message sent:",
         JSON.stringify(responses.map((r) => r.data)),
       )
     } catch (error: unknown) {
       const axiosError = error as { response?: { data?: unknown } }
-      console.error(
+      logger.error(
         "Error sending WhatsApp message:",
         axiosError.response?.data || (error as Error).message,
       )

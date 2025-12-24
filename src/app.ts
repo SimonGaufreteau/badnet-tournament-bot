@@ -10,6 +10,7 @@ import {
 } from "./env"
 import { fetchTournaments, fetchTournamentsForRegions } from "./fetch"
 import { filterTournaments } from "./filters"
+import { logger } from "./logger"
 import { DiscordSender } from "./senders/discordSender"
 import type { Sender } from "./senders/sender"
 import { WhatsAppSender } from "./senders/whatsappSender"
@@ -27,7 +28,7 @@ if (process.env.DISCORD_TOKEN && process.env.DISCORD_CHANNEL_ID) {
 }
 
 const run = async (): Promise<void> => {
-  console.log(`[${new Date().toISOString()}] Fetching tournaments...`)
+  logger.info("Fetching tournaments...")
 
   try {
     let tournaments: Tournament[] = []
@@ -59,22 +60,23 @@ const run = async (): Promise<void> => {
       )
     }
 
-    console.log(
-      `[${new Date().toISOString()}] Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
+    logger.info(
+      `Found ${newTournaments.length} new tournaments (${filtered.length} total)`,
     )
 
     const sendPromises = newTournaments.flatMap((tournament) =>
       senders.map((sender) => sender.send(tournament)),
     )
     await Promise.all(sendPromises)
+    logger.info("Process completed. Waiting for next run.")
   } catch (err) {
-    console.error("Error fetching tournaments:", (err as AxiosError).message)
+    logger.error("Error fetching tournaments:", (err as AxiosError).message)
   }
 }
 
 const validateResults = validateFilters(FILTERS)
 if (validateResults.length > 0) {
-  console.error(
+  logger.error(
     `Filters validation failed. Errors :\n${validateResults.map((res) => res.message).join("\n")}`,
   )
   process.exit(1)
@@ -84,6 +86,5 @@ loadCache()
 run()
 
 const interval = INTERVALMINUTES
-console.info(`Starting run every ${interval} minutes`)
-console.info("Deployment test - workflow is working!")
+logger.info(`Starting run every ${interval} minutes`)
 setInterval(run, interval * 60 * 1000)

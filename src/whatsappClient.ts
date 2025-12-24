@@ -1,6 +1,7 @@
 import axios from "axios"
 import dayjs from "dayjs"
 import { WHATSAPP_API_URL, WHATSAPP_DESTINATION, WHATSAPP_TOKEN } from "./env"
+import { logger } from "./logger"
 import type { Tournament } from "./types/filter-types"
 
 const DATE_FORMAT_HOUR = "DD/MM/YYYY HH:mm"
@@ -23,7 +24,7 @@ const formatLink = (t: Tournament) =>
   `https://badnet.fr/tournoi/public?eventid=${t.id}`
 
 export const sendWhatsAppTournament = async (tournament: Tournament) => {
-  console.log(
+  logger.info(
     `Sending tournament ${tournament.name} to ${WHATSAPP_DESTINATION}`,
   )
   try {
@@ -69,11 +70,11 @@ export const sendWhatsAppTournament = async (tournament: Tournament) => {
     const promises = WHATSAPP_DESTINATION.map(sendMessage)
     const responses = await Promise.all(promises)
 
-    console.log("Message sent:", JSON.stringify(responses.map((r) => r.data)))
+    logger.info("Message sent:", JSON.stringify(responses.map((r) => r.data)))
     return responses
   } catch (error: unknown) {
     const axiosError = error as { response?: { data?: unknown } }
-    console.error(
+    logger.error(
       "Error sending WhatsApp message:",
       axiosError.response?.data || (error as Error).message,
     )
