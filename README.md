@@ -41,6 +41,7 @@ DISCORD_CHANNEL_ID=yourchannelid
 DISCORD_REGION_CHANNELS=PDLL:channelid1,AURA:channelid2,PACA:channelid3
 
 CACHE_FILE=cache.json
+DATABASE_PATH=tournaments.db
 ```
 
 ### Setting up WhatsApp

@@ -5,6 +5,7 @@ import {
   PAGELIMIT,
   REGION_FETCH_DELAY_SECONDS,
 } from "./env"
+import { tournamentDb } from "./database"
 import type { Filters, Tournament } from "./types/filter-types"
 import type { BadnetTournament } from "./types/payload-types"
 
@@ -29,6 +30,14 @@ export const mapToTournaments = (
   region?: string,
 ): Tournament[] => {
   const parsed: { events: BadnetTournament[] } = JSON.parse(data)
+  
+  // Save raw tournaments to database
+  for (const event of parsed.events) {
+    if (!tournamentDb.tournamentExists(event.id)) {
+      tournamentDb.saveTournament(event, region)
+    }
+  }
+  
   return parsed.events.map((event: BadnetTournament) => {
     // Debug missing ranking data
     const hasInvalidDraws = event.draws.some(
